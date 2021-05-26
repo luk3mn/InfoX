@@ -5,17 +5,35 @@
  */
 package br.com.infox.telas;
 
+// para manipular os comandos SQL
+import java.sql.*;
+
+// Importando o módulo de conexao
+import br.com.infox.dal.ModuloConexao;
 /**
  *
- * @author Qwerty
+ * @author Lucas Renan Maues Nunes
  */
 public class TelaLogin extends javax.swing.JFrame {
-
+    // frameworks do pacote java.sql
+    // inicializando a variável conexao
+    Connection conexao = null;
+    // variáveis especiais de apoio à conexão com o BD      
+    PreparedStatement pst = null;
+    // objeto matriz que recebe o resultado do comando SQL
+    ResultSet rs = null;
+    
     /**
      * Creates new form TelaLogin
      */
     public TelaLogin() {
         initComponents();
+        
+        // executa o metodo conector
+        // recebe a string de conexao ou NULL
+        conexao = ModuloConexao.conector();
+        
+        System.out.println(conexao);
     }
 
     /**
