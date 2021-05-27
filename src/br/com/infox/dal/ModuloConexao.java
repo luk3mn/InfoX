@@ -12,7 +12,8 @@ public class ModuloConexao {
         String driver = "com.mysql.jdbc.Driver";
         
         // Variável com o caminho de acesso ao BD - local
-        String url = "jdbc:mysql://localhost:3306/dbinfox";
+        //String url = "jdbc:mysql://localhost:3306/dbinfox";
+        String url = "jdbc:mysql://localhost:3306/dbinfox?useTimezone=true&serverTimezone=UTC&useSSL=false"; // para sumir o waring
         
         // Variável com o usuario do DB
         String user = "root";
@@ -35,6 +36,10 @@ public class ModuloConexao {
             return conexao;
             
         } catch (Exception e) {
+            
+            // mostra a exceção
+            // System.out.println(e);
+
             // se houver algum problema retorna o valor NULL
             return null;
         }
