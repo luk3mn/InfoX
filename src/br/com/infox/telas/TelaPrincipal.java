@@ -150,6 +150,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenCad.add(MenCadOs);
 
         MenCadUsu.setText("Usuários");
+        MenCadUsu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenCadUsuActionPerformed(evt);
+            }
+        });
         MenCad.add(MenCadUsu);
 
         Menu.add(MenCad);
@@ -226,6 +231,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         TelaSobre sobre = new TelaSobre();
         sobre.setVisible(true);
     }//GEN-LAST:event_MenAjuSobActionPerformed
+
+    private void MenCadUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadUsuActionPerformed
+        TelaUsuario usuario = new TelaUsuario();
+        usuario.setVisible(true);
+    }//GEN-LAST:event_MenCadUsuActionPerformed
 
     /**
      * @param args the command line arguments
