@@ -81,8 +81,104 @@ public class TelaUsuario extends javax.swing.JFrame {
             pst.setString(2, txtUsuFone.getText());
             pst.setString(3, txtUsuLogin.getText());
             pst.setString(4, txtUsuSenha.getText());
+            
+            // validação dos campos obrigatórios
+            if ((txtUsuNome.getText().isEmpty()) || (txtUsuLogin.getText().isEmpty()) || (txtUsuSenha.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                // executa o comando SQL
+                int adicionado = pst.executeUpdate(); // retorna um valor numerico
+                
+                // testa se adicionou
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+                    
+                    // limpando os campos do formulário
+                    txtUsuNome.setText(null);
+                    txtUsuFone.setText(null);
+                    txtUsuLogin.setText(null);
+                    txtUsuSenha.setText(null);
+                }
+            }
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
+    }
+    
+    // MÉTODO PARA ALTERAR USUÁRIOS
+    private void alterar() {
+        String sql = "UPDATE tbusuarios SET usuario=?, fone=?, login=?, senha=? WHERE iduser=?";
+        
+        try {
+            // prepara execução do coamando sql
+            pst = conexao.prepareStatement(sql);
+            
+            // recebe os campos do form~lário na ordem e envia para o update
+            pst.setString(1, txtUsuNome.getText());
+            pst.setString(2, txtUsuFone.getText());
+            pst.setString(3, txtUsuLogin.getText());
+            pst.setString(4, txtUsuSenha.getText());
+            pst.setString(5, txtUsuId.getText());
+            
+            // validação dos campos obrigatórios
+            if ((txtUsuId.getText().isEmpty()) || (txtUsuNome.getText().isEmpty()) || (txtUsuLogin.getText().isEmpty()) || (txtUsuSenha.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                // executa o comando SQL
+                int alterado = pst.executeUpdate();
+                
+                // Testa se alterou
+                if (alterado > 0) {
+                    JOptionPane.showMessageDialog(null, "Dados do usuário alterado com sucesso");
+                    
+                    // limpando os campos do formulário
+                    txtUsuId.setText(null);
+                    txtUsuNome.setText(null);
+                    txtUsuFone.setText(null);
+                    txtUsuLogin.setText(null);
+                    txtUsuSenha.setText(null);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    // MÉTODO PARA REMOVER USUÁRIOS
+    private void remover() {
+        
+        // pede confirmação para remover usuario
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "DELETE FROM tbusuarios WHERE iduser=?";
+            
+            try {
+                // prepara execução do comando SQL
+                pst = conexao.prepareStatement(sql);
+                
+                // recebe o campo id do formulário, e envia para o delete
+                pst.setString(1, txtUsuId.getText());
+                
+                // executa o comando SQL
+                int apagado = pst.executeUpdate();
+                
+                // testa se REMOVEU
+                if (apagado > 0) {
+                    JOptionPane.showMessageDialog(null, "Usuário removido com sucesso");
+                   
+                    // limpando os campos do formulário
+                    txtUsuId.setText(null);
+                    txtUsuNome.setText(null);
+                    txtUsuFone.setText(null);
+                    txtUsuLogin.setText(null);
+                    txtUsuSenha.setText(null);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+        
     }
     
     /**
@@ -141,6 +237,11 @@ public class TelaUsuario extends javax.swing.JFrame {
         btnUsuCreate.setToolTipText("Adicionar");
         btnUsuCreate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsuCreate.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnUsuCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsuCreateActionPerformed(evt);
+            }
+        });
 
         btnUsuRead.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/read.png"))); // NOI18N
         btnUsuRead.setToolTipText("Consultar");
@@ -156,11 +257,21 @@ public class TelaUsuario extends javax.swing.JFrame {
         btnUsuUpdate.setToolTipText("Alterar");
         btnUsuUpdate.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsuUpdate.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnUsuUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsuUpdateActionPerformed(evt);
+            }
+        });
 
         btnUsuDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/delete.png"))); // NOI18N
         btnUsuDelete.setToolTipText("Remover");
         btnUsuDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnUsuDelete.setPreferredSize(new java.awt.Dimension(80, 80));
+        btnUsuDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsuDeleteActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("* Campos obrigatórios");
 
@@ -258,6 +369,19 @@ public class TelaUsuario extends javax.swing.JFrame {
     private void btnUsuReadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuReadActionPerformed
         consultar();
     }//GEN-LAST:event_btnUsuReadActionPerformed
+
+    private void btnUsuCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuCreateActionPerformed
+        // chama o metodo adicionar
+        adicionar();
+    }//GEN-LAST:event_btnUsuCreateActionPerformed
+
+    private void btnUsuUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuUpdateActionPerformed
+        alterar();
+    }//GEN-LAST:event_btnUsuUpdateActionPerformed
+
+    private void btnUsuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuDeleteActionPerformed
+        remover();
+    }//GEN-LAST:event_btnUsuDeleteActionPerformed
 
     /**
      * @param args the command line arguments
