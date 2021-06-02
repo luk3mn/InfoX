@@ -5,19 +5,121 @@
  */
 package br.com.infox.telas;
 
+import java.sql.*;
+import br.com.infox.dal.ModuloConexao;
+import javax.swing.JOptionPane;
 /**
  *
- * @author Qwerty
+ * @author Lucas Renan Maues Nunes
  */
 public class TelaOs extends javax.swing.JFrame {
-
+    // frameworks do pacote java.sql
+    // inicializando a variável conexao
+    Connection conexao = null;
+    // variáveis especiais de apoio à conexão com o BD      
+    PreparedStatement pst = null;
+    // objeto matriz que recebe o resultado do comando SQL
+    ResultSet rs = null;
+    
     /**
      * Creates new form TelaOs
      */
     public TelaOs() {
         initComponents();
+        
+        // executa o metodo conector
+        // recebe a string de conexao ou NULL
+        conexao = ModuloConexao.conector();
     }
-
+    
+    // MÉTODO PARA ADICIONAR OS
+    public void adicionar() {
+        // Instrução SQL
+        String sql = "INSERT INTO tbos (equipamento,defeito,servico,tecnico,valor,idcli) VALUES (?,?,?,?,?,?)";
+//        String sqlSelect = "";
+        /*
+            ATENÇÃO:
+            - Fazer alteração para pegar o id da tabela de clientes e 
+              inserir no Banco de dados
+            - Não deixar criar nova OS se o id do cliente não tiver cadastrado na tabela de clientes
+        */
+        
+        try {
+            // Prepara a conexao com o BD
+            pst = conexao.prepareStatement(sql);
+            
+            // Atribui ao BD os valores a serem inseridos pelo formulário
+            pst.setString(1, txtOsEquip.getText());
+            pst.setString(2, txtOsDefeito.getText());
+            pst.setString(3, txtOsServico.getText());
+            pst.setString(4, txtOsTecnico.getText());
+            pst.setString(5, txtOsValor.getText());
+            pst.setString(6, txtOsIdCliente.getText());
+            
+            // validade os campos
+            if ((txtOsEquip.getText().isEmpty()) || (txtOsDefeito.getText().isEmpty()) || (txtOsServico.getText().isEmpty()) || (txtOsTecnico.getText().isEmpty()) || (txtOsIdCliente.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                // executa o comando SQL
+                int adicionado = pst.executeUpdate(); // retorna um valor numerico diferente de ZERO
+                
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Ordem de serviço adicionado com sucesso");
+                    
+                    // limpando os campos de entrada
+                    txtOsEquip.setText(null);
+                    txtOsDefeito.setText(null);
+                    txtOsServico.setText(null);
+                    txtOsTecnico.setText(null);
+                    txtOsValor.setText(null);
+                    txtOsIdCliente.setText(null);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void consultar() {
+        // Consulta SQL
+        String sql = "SELECT * FROM tbos WHERE os=?";
+        
+        try {
+            // Prepara a conexao com o BD
+            pst = conexao.prepareStatement(sql);
+            
+            // Atribui o id os na consulta sql
+            pst.setString(1, txtOsId.getText());
+            
+            // executa a consulta sql e atribui ao ResultSet
+            rs = pst.executeQuery();
+            
+            // valida a existencia da OS
+            if (rs.next()) {
+                txtOsData.setText(rs.getString(2));
+                txtOsEquip.setText(rs.getString(3));
+                txtOsDefeito.setText(rs.getString(4));
+                txtOsServico.setText(rs.getString(5));
+                txtOsTecnico.setText(rs.getString(6));
+                txtOsValor.setText(rs.getString(7));
+                txtOsIdCliente.setText(rs.getString(8));
+            } else {
+                JOptionPane.showMessageDialog(null, "Ordem de serviço não existe");
+                
+                // limpando os campos do formulários
+                txtOsData.setText(null);
+                txtOsEquip.setText(null);
+                txtOsDefeito.setText(null);
+                txtOsServico.setText(null);
+                txtOsTecnico.setText(null);
+                txtOsValor.setText(null);
+                txtOsIdCliente.setText(null);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -79,11 +181,21 @@ public class TelaOs extends javax.swing.JFrame {
         jButton1.setToolTipText("Adicionar");
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.setPreferredSize(new java.awt.Dimension(80, 80));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/read.png"))); // NOI18N
         jButton2.setToolTipText("Consultar");
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton2.setPreferredSize(new java.awt.Dimension(80, 80));
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/update.png"))); // NOI18N
         jButton3.setToolTipText("Alterar");
@@ -197,7 +309,7 @@ public class TelaOs extends javax.swing.JFrame {
                     .addComponent(jLabel6)
                     .addComponent(txtOsIdCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(34, 34, 34)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -230,6 +342,16 @@ public class TelaOs extends javax.swing.JFrame {
     private void txtOsValorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtOsValorActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtOsValorActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // Realizando uma consulta
+        consultar();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Adicioando ordem de serviço
+        adicionar();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

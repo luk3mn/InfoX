@@ -10,7 +10,7 @@ import br.com.infox.dal.ModuloConexao;
 import javax.swing.JOptionPane;
 /**
  *
- * @author Qwerty
+ * @author Lucas Renan Maues Nunes
  */
 public class TelaCliente extends javax.swing.JFrame {
     
