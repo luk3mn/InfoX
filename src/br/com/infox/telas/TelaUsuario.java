@@ -354,8 +354,7 @@ public class TelaUsuario extends javax.swing.JFrame {
                         .addContainerGap())))
         );
 
-        setSize(new java.awt.Dimension(700, 500));
-        setLocationRelativeTo(null);
+        setBounds(223, 145, 700, 500);
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtUsuNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuNomeActionPerformed

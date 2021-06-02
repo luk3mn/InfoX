@@ -343,8 +343,7 @@ public class TelaCliente extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(700, 500));
-        setLocationRelativeTo(null);
+        setBounds(223, 145, 700, 500);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCliCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCliCreateActionPerformed

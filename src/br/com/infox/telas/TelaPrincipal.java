@@ -218,7 +218,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void MenCadOsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenCadOsActionPerformed
-        // TODO add your handling code here:
+        TelaOs os = new TelaOs();
+        os.setVisible(true);
     }//GEN-LAST:event_MenCadOsActionPerformed
 
     private void MenOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenOpcSaiActionPerformed
