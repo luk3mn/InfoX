@@ -107,7 +107,7 @@ public class TelaCliente extends javax.swing.JFrame {
     
     // MÉTODO PARA ALTERAR CLIENTE (UPDATE)
     private void alterar() {
-        String sql = "UPDATE tbclientes SET nomecli=?, endcli=?, fonecli=?, emailcli=?";
+        String sql = "UPDATE tbclientes SET nomecli=?, endcli=?, fonecli=?, emailcli=? WHERE idcli=?";
         
         try {
             // Prepara a conexao com o BD
@@ -118,6 +118,7 @@ public class TelaCliente extends javax.swing.JFrame {
             pst.setString(2, txtCliEndereco.getText());
             pst.setString(3, txtCliTelefone.getText());
             pst.setString(4, txtCliEmail.getText());
+            pst.setString(5, txtCliId.getText());
             
             // Valida as entradas
             if ((txtCliId.getText().isEmpty()) ||(txtCliNome.getText().isEmpty()) || (txtCliEndereco.getText().isEmpty()) || (txtCliTelefone.getText().isEmpty())) {

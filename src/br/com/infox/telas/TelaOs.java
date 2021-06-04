@@ -32,23 +32,15 @@ public class TelaOs extends javax.swing.JFrame {
         conexao = ModuloConexao.conector();
     }
     
-    // MÉTODO PARA ADICIONAR OS
-    public void adicionar() {
-        // Instrução SQL
+    // Metodo que vai inserir uma nova OS
+    private void auxAdd() {
         String sql = "INSERT INTO tbos (equipamento,defeito,servico,tecnico,valor,idcli) VALUES (?,?,?,?,?,?)";
-//        String sqlSelect = "";
-        /*
-            ATENÇÃO:
-            - Fazer alteração para pegar o id da tabela de clientes e 
-              inserir no Banco de dados
-            - Não deixar criar nova OS se o id do cliente não tiver cadastrado na tabela de clientes
-        */
         
         try {
-            // Prepara a conexao com o BD
+            // Preparando a conexao com o BD
             pst = conexao.prepareStatement(sql);
             
-            // Atribui ao BD os valores a serem inseridos pelo formulário
+            // Atribuindo os campos do formulario às posições do sql
             pst.setString(1, txtOsEquip.getText());
             pst.setString(2, txtOsDefeito.getText());
             pst.setString(3, txtOsServico.getText());
@@ -75,6 +67,32 @@ public class TelaOs extends javax.swing.JFrame {
                     txtOsIdCliente.setText(null);
                 }
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    // MÉTODO PARA ADICIONAR OS
+    public void adicionar() {
+        // Instrução SQL para buscar a chave primaria da tabela de clentea
+        String sql = "SELECT idcli FROM tbclientes WHERE idcli = ?";
+        
+        try {
+            // Prepara a conexao com o BD
+            pst = conexao.prepareStatement(sql);
+            
+            // Atribui o id do campo do form à consulta sql da tabela de clientes 
+            pst.setString(1, txtOsIdCliente.getText());
+            
+            // Retorna a consulta no ResultSet
+            rs = pst.executeQuery();
+            
+            if (rs.next()) {// Valida a existencia de um cliente cadastrado na tabela de clientes
+                auxAdd(); // chama o metodo que vai fazer a inserção da OS
+            } else {
+                JOptionPane.showMessageDialog(null, "O cliente com ID "+txtOsIdCliente.getText()+" ainda não foi registrado");
+            }
+        
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -120,6 +138,110 @@ public class TelaOs extends javax.swing.JFrame {
         }
     }
     
+    // METODO PARA ALTERAR A OS
+    private void auxAlt() {
+        String sql = "UPDATE tbos SET equipamento=?, defeito=?, servico=?, tecnico=?, valor=?, idcli=? WHERE os=?";
+        
+        try {
+            // Prepara a conexão com o BD
+            pst = conexao.prepareStatement(sql);
+            
+            // Atribuindo os campos do formulario às posições do sql
+            pst.setString(1, txtOsEquip.getText());
+            pst.setString(2, txtOsDefeito.getText());
+            pst.setString(3, txtOsServico.getText());
+            pst.setString(4, txtOsTecnico.getText());
+            pst.setString(5, txtOsValor.getText());
+            pst.setString(6, txtOsIdCliente.getText());
+            pst.setString(7, txtOsId.getText());
+            
+            // validade os campos
+            if ((txtOsId.getText().isEmpty()) ||(txtOsEquip.getText().isEmpty()) || (txtOsDefeito.getText().isEmpty()) || (txtOsServico.getText().isEmpty()) || (txtOsTecnico.getText().isEmpty()) || (txtOsIdCliente.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios");
+            } else {
+                // executa o comando SQL
+                int adicionado = pst.executeUpdate(); // retorna um valor numerico diferente de ZERO
+                
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Ordem de serviço adicionado com sucesso");
+                    
+                    // limpando os campos de entrada
+                    txtOsEquip.setText(null);
+                    txtOsDefeito.setText(null);
+                    txtOsServico.setText(null);
+                    txtOsTecnico.setText(null);
+                    txtOsValor.setText(null);
+                    txtOsIdCliente.setText(null);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    // MÉTODO PARA BUSAR PELA CHAVE ESTRANGEIRA
+    private void alterar() {
+        // Instrução SQL para buscar a chave primaria da tabela de clentea
+        String sql = "SELECT idcli FROM tbclientes WHERE idcli = ?";
+        
+        try {
+            // Prepara a conexao com o BD
+            pst = conexao.prepareStatement(sql);
+            
+            // Atribui o id do campo do form à consulta sql da tabela de clientes 
+            pst.setString(1, txtOsIdCliente.getText());
+            
+            // Retorna a consulta no ResultSet
+            rs = pst.executeQuery();
+            
+            if (rs.next()) {// Valida a existencia de um cliente cadastrado na tabela de clientes
+                auxAlt(); // chama o metodo que vai fazer a alteração dodos da OS
+            } else {
+                JOptionPane.showMessageDialog(null, "O cliente com ID "+txtOsIdCliente.getText()+" ainda não foi registrado");
+            }
+        
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    // MÉTODO PARA DELETAR UMA OS
+    private void remover() {
+        // pede confirmação para remover usuario
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        
+        if (confirma == JOptionPane.YES_OPTION) {
+            // Comando sql para deletar OS
+            String sql = "DELETE FROM tbos WHERE os=?";
+            
+            try {
+                // Prepara a conexão com o bd
+                pst = conexao.prepareStatement(sql);
+                
+                // Atribui o campo os do formulario ao comando sql
+                pst.setString(1, txtOsId.getText());
+                
+                // executa a consulta e atribui seu retirno à variavel apagado
+                int apagado = pst.executeUpdate();
+                
+                // Testa se a remoção foi feita
+                if (apagado > 0) {
+                    JOptionPane.showMessageDialog(null, "Ordem de serviço removido com sucesso");
+                    
+                    // limpando os campos do formulário
+                    txtOsEquip.setText(null);
+                    txtOsDefeito.setText(null);
+                    txtOsServico.setText(null);
+                    txtOsTecnico.setText(null);
+                    txtOsValor.setText(null);
+                    txtOsIdCliente.setText(null);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -138,7 +260,6 @@ public class TelaOs extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         txtOsId = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        txtOsData = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -150,6 +271,7 @@ public class TelaOs extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         txtOsValor = new javax.swing.JTextField();
         txtOsIdCliente = new javax.swing.JTextField();
+        txtOsData = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ordem de Serviço");
@@ -201,11 +323,21 @@ public class TelaOs extends javax.swing.JFrame {
         jButton3.setToolTipText("Alterar");
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton3.setPreferredSize(new java.awt.Dimension(80, 80));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/infox/icones/delete.png"))); // NOI18N
         jButton4.setToolTipText("Remover");
         jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton4.setPreferredSize(new java.awt.Dimension(80, 80));
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         txtOsDefeito.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -220,6 +352,10 @@ public class TelaOs extends javax.swing.JFrame {
                 txtOsValorActionPerformed(evt);
             }
         });
+
+        txtOsData.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        txtOsData.setForeground(new java.awt.Color(51, 51, 51));
+        txtOsData.setText("________________");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -243,17 +379,11 @@ public class TelaOs extends javax.swing.JFrame {
                             .addComponent(txtOsServico)
                             .addComponent(txtOsDefeito)
                             .addComponent(txtOsEquip)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtOsId, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(75, 75, 75)
-                                .addComponent(jLabel7)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtOsData, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(txtOsTecnico, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                                         .addComponent(jLabel8)
                                         .addGap(18, 18, 18))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -270,7 +400,13 @@ public class TelaOs extends javax.swing.JFrame {
                                     .addComponent(txtOsValor, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(23, 23, 23))))))
+                                        .addGap(23, 23, 23))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtOsId, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(75, 75, 75)
+                                .addComponent(jLabel7)
+                                .addGap(27, 27, 27)
+                                .addComponent(txtOsData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(78, 78, 78)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -284,7 +420,7 @@ public class TelaOs extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(txtOsId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(txtOsData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtOsData))
                 .addGap(27, 27, 27)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -353,6 +489,16 @@ public class TelaOs extends javax.swing.JFrame {
         adicionar();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // Alterar os dados da ordem de servico
+        alterar();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // Remove uma ordem de serviço
+        remover();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -402,7 +548,7 @@ public class TelaOs extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField txtOsData;
+    private javax.swing.JLabel txtOsData;
     private javax.swing.JTextField txtOsDefeito;
     private javax.swing.JTextField txtOsEquip;
     private javax.swing.JTextField txtOsId;
